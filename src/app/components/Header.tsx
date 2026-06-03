@@ -1,11 +1,7 @@
 import { useState } from 'react';
 import { useStore } from '../store/useStore';
 import { LogOut, Circle } from 'lucide-react';
-import Dialog from '@mui/material/Dialog';
-import DialogTitle from '@mui/material/DialogTitle';
-import DialogContent from '@mui/material/DialogContent';
-import DialogActions from '@mui/material/DialogActions';
-import Button from '@mui/material/Button';
+import { Modal, SecondaryButton } from './ui-kit';
 
 export function Header() {
   const currentUser = useStore((state) => state.currentUser);
@@ -90,30 +86,34 @@ export function Header() {
         </div>
       </header>
 
-      <Dialog open={statusDialogOpen} onClose={() => setStatusDialogOpen(false)}>
-        <DialogTitle>Изменить статус</DialogTitle>
-        <DialogContent>
-          <div className="space-y-3 pt-2">
-            {(['working', 'break', 'day_end'] as const).map((status) => (
-              <button
-                key={status}
-                onClick={() => handleStatusChange(status)}
-                className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg border-2 transition-all ${
-                  currentUser.status === status
-                    ? 'border-blue-600 bg-blue-50'
-                    : 'border-gray-200 hover:border-gray-300'
-                }`}
-              >
-                <Circle className={`w-3 h-3 fill-current ${getStatusColor(status)}`} />
-                <span className="font-medium">{getStatusText(status)}</span>
-              </button>
-            ))}
-          </div>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setStatusDialogOpen(false)}>Отмена</Button>
-        </DialogActions>
-      </Dialog>
+      <Modal
+        open={statusDialogOpen}
+        onClose={() => setStatusDialogOpen(false)}
+        title="Изменить статус"
+        maxWidth="max-w-sm"
+        footer={
+          <SecondaryButton onClick={() => setStatusDialogOpen(false)}>
+            Отмена
+          </SecondaryButton>
+        }
+      >
+        <div className="space-y-3">
+          {(['working', 'break', 'day_end'] as const).map((status) => (
+            <button
+              key={status}
+              onClick={() => handleStatusChange(status)}
+              className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg border-2 transition-all ${
+                currentUser.status === status
+                  ? 'border-blue-600 bg-blue-50'
+                  : 'border-gray-200 hover:border-gray-300'
+              }`}
+            >
+              <Circle className={`w-3 h-3 fill-current ${getStatusColor(status)}`} />
+              <span className="font-medium">{getStatusText(status)}</span>
+            </button>
+          ))}
+        </div>
+      </Modal>
     </>
   );
 }

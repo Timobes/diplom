@@ -1,16 +1,7 @@
 import { useState } from 'react';
 import { useStore, User } from '../store/useStore';
 import { Plus, Edit, Trash2, Shield, Users as UsersIcon } from 'lucide-react';
-import Dialog from '@mui/material/Dialog';
-import DialogTitle from '@mui/material/DialogTitle';
-import DialogContent from '@mui/material/DialogContent';
-import DialogActions from '@mui/material/DialogActions';
-import Button from '@mui/material/Button';
-import TextField from '@mui/material/TextField';
-import MenuItem from '@mui/material/MenuItem';
-import IconButton from '@mui/material/IconButton';
-import Tabs from '@mui/material/Tabs';
-import Tab from '@mui/material/Tab';
+import { Modal, PrimaryButton, SecondaryButton, Label, inputCls } from './ui-kit';
 
 export function AdminPanel() {
   const users = useStore((state) => state.users);
@@ -126,12 +117,18 @@ export function AdminPanel() {
             </div>
           </div>
           <div className="flex gap-1">
-            <IconButton size="small" onClick={() => handleOpenDialog(user)}>
+            <button
+              onClick={() => handleOpenDialog(user)}
+              className="p-1.5 rounded-lg text-gray-500 hover:bg-gray-100 transition-colors"
+            >
               <Edit className="w-4 h-4" />
-            </IconButton>
-            <IconButton size="small" onClick={() => handleDelete(user.id)}>
-              <Trash2 className="w-4 h-4 text-red-600" />
-            </IconButton>
+            </button>
+            <button
+              onClick={() => handleDelete(user.id)}
+              className="p-1.5 rounded-lg text-red-600 hover:bg-red-50 transition-colors"
+            >
+              <Trash2 className="w-4 h-4" />
+            </button>
           </div>
         </div>
 
@@ -185,25 +182,25 @@ export function AdminPanel() {
         </button>
       </div>
 
-      <div className="bg-white rounded-lg shadow">
-        <Tabs value={activeTab} onChange={(_, v) => setActiveTab(v)}>
-          <Tab
-            label={
-              <div className="flex items-center gap-2">
-                <Shield className="w-4 h-4" />
-                Руководители ({supervisors.length})
-              </div>
-            }
-          />
-          <Tab
-            label={
-              <div className="flex items-center gap-2">
-                <UsersIcon className="w-4 h-4" />
-                Менеджеры ({managers.length})
-              </div>
-            }
-          />
-        </Tabs>
+      <div className="bg-white rounded-lg shadow p-1 inline-flex gap-1">
+        <button
+          onClick={() => setActiveTab(0)}
+          className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-colors ${
+            activeTab === 0 ? 'bg-blue-600 text-white' : 'text-gray-600 hover:bg-gray-100'
+          }`}
+        >
+          <Shield className="w-4 h-4" />
+          Руководители ({supervisors.length})
+        </button>
+        <button
+          onClick={() => setActiveTab(1)}
+          className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-colors ${
+            activeTab === 1 ? 'bg-blue-600 text-white' : 'text-gray-600 hover:bg-gray-100'
+          }`}
+        >
+          <UsersIcon className="w-4 h-4" />
+          Менеджеры ({managers.length})
+        </button>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -219,39 +216,52 @@ export function AdminPanel() {
         </div>
       )}
 
-      <Dialog open={dialogOpen} onClose={() => setDialogOpen(false)} maxWidth="sm" fullWidth>
-        <DialogTitle>
-          {selectedUser ? 'Редактировать пользователя' : 'Добавить пользователя'}
-        </DialogTitle>
-        <DialogContent>
-          <div className="space-y-4 pt-2">
-            <TextField
-              label="Email *"
-              fullWidth
+      <Modal
+        open={dialogOpen}
+        onClose={() => setDialogOpen(false)}
+        title={selectedUser ? 'Редактировать пользователя' : 'Добавить пользователя'}
+        footer={
+          <>
+            <SecondaryButton onClick={() => setDialogOpen(false)}>Отмена</SecondaryButton>
+            <PrimaryButton onClick={handleSave}>
+              {selectedUser ? 'Сохранить' : 'Создать'}
+            </PrimaryButton>
+          </>
+        }
+      >
+        <div className="space-y-4">
+          <div>
+            <Label>Email *</Label>
+            <input
               type="email"
+              className={inputCls}
+              placeholder="example@crm.com"
               value={formData.email}
               onChange={(e) => setFormData({ ...formData, email: e.target.value })}
             />
-            <TextField
-              label="Имя *"
-              fullWidth
-              value={formData.firstName}
-              onChange={(e) =>
-                setFormData({ ...formData, firstName: e.target.value })
-              }
-            />
-            <TextField
-              label="Фамилия *"
-              fullWidth
-              value={formData.lastName}
-              onChange={(e) =>
-                setFormData({ ...formData, lastName: e.target.value })
-              }
-            />
-            <TextField
-              label="Роль *"
-              fullWidth
-              select
+          </div>
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <Label>Имя *</Label>
+              <input
+                className={inputCls}
+                value={formData.firstName}
+                onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
+              />
+            </div>
+            <div>
+              <Label>Фамилия *</Label>
+              <input
+                className={inputCls}
+                value={formData.lastName}
+                onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
+              />
+            </div>
+          </div>
+          <div>
+            <Label>Роль *</Label>
+            <select
+              className={inputCls}
               value={formData.role}
               onChange={(e) =>
                 setFormData({
@@ -260,37 +270,32 @@ export function AdminPanel() {
                 })
               }
             >
-              <MenuItem value="manager">Менеджер</MenuItem>
-              <MenuItem value="supervisor">Руководитель</MenuItem>
-              <MenuItem value="admin">Администратор</MenuItem>
-            </TextField>
-            {formData.role === 'manager' && (
-              <TextField
-                label="Руководитель"
-                fullWidth
-                select
+              <option value="manager">Менеджер</option>
+              <option value="supervisor">Руководитель</option>
+              <option value="admin">Администратор</option>
+            </select>
+          </div>
+          {formData.role === 'manager' && (
+            <div>
+              <Label>Руководитель</Label>
+              <select
+                className={inputCls}
                 value={formData.supervisorId}
                 onChange={(e) =>
                   setFormData({ ...formData, supervisorId: e.target.value })
                 }
               >
-                <MenuItem value="">Не назначен</MenuItem>
+                <option value="">Не назначен</option>
                 {supervisors.map((supervisor) => (
-                  <MenuItem key={supervisor.id} value={supervisor.id}>
+                  <option key={supervisor.id} value={supervisor.id}>
                     {supervisor.firstName} {supervisor.lastName}
-                  </MenuItem>
+                  </option>
                 ))}
-              </TextField>
-            )}
-          </div>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setDialogOpen(false)}>Отмена</Button>
-          <Button onClick={handleSave} variant="contained">
-            {selectedUser ? 'Сохранить' : 'Создать'}
-          </Button>
-        </DialogActions>
-      </Dialog>
+              </select>
+            </div>
+          )}
+        </div>
+      </Modal>
     </div>
   );
 }

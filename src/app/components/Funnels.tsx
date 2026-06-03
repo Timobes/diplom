@@ -1,13 +1,7 @@
 import { useState } from 'react';
 import { useStore, Funnel, FunnelStage } from '../store/useStore';
 import { Plus, Edit, Trash2, ChevronRight } from 'lucide-react';
-import Dialog from '@mui/material/Dialog';
-import DialogTitle from '@mui/material/DialogTitle';
-import DialogContent from '@mui/material/DialogContent';
-import DialogActions from '@mui/material/DialogActions';
-import Button from '@mui/material/Button';
-import TextField from '@mui/material/TextField';
-import IconButton from '@mui/material/IconButton';
+import { Modal, PrimaryButton, SecondaryButton, Label, inputCls } from './ui-kit';
 
 export function Funnels() {
   const funnels = useStore((state) => state.funnels);
@@ -109,13 +103,19 @@ export function Funnels() {
                 <h3 className="text-xl font-semibold text-gray-900">{funnel.name}</h3>
                 <p className="text-sm text-gray-600 mt-1">{funnel.description}</p>
               </div>
-              <div className="flex gap-2">
-                <IconButton size="small" onClick={() => handleOpenDialog(funnel)}>
+              <div className="flex gap-1">
+                <button
+                  onClick={() => handleOpenDialog(funnel)}
+                  className="p-1.5 rounded-lg text-gray-500 hover:bg-gray-100 transition-colors"
+                >
                   <Edit className="w-4 h-4" />
-                </IconButton>
-                <IconButton size="small" onClick={() => handleDelete(funnel.id)}>
-                  <Trash2 className="w-4 h-4 text-red-600" />
-                </IconButton>
+                </button>
+                <button
+                  onClick={() => handleDelete(funnel.id)}
+                  className="p-1.5 rounded-lg text-red-600 hover:bg-red-50 transition-colors"
+                >
+                  <Trash2 className="w-4 h-4" />
+                </button>
               </div>
             </div>
 
@@ -153,92 +153,92 @@ export function Funnels() {
         </div>
       )}
 
-      <Dialog open={dialogOpen} onClose={handleCloseDialog} maxWidth="md" fullWidth>
-        <DialogTitle>
-          {editingFunnel ? 'Редактировать воронку' : 'Создать воронку'}
-        </DialogTitle>
-        <DialogContent>
-          <div className="space-y-4 pt-2">
-            <TextField
-              label="Название воронки"
-              fullWidth
+      <Modal
+        open={dialogOpen}
+        onClose={handleCloseDialog}
+        maxWidth="max-w-2xl"
+        title={editingFunnel ? 'Редактировать воронку' : 'Создать воронку'}
+        footer={
+          <>
+            <SecondaryButton onClick={handleCloseDialog}>Отмена</SecondaryButton>
+            <PrimaryButton onClick={handleSave}>
+              {editingFunnel ? 'Сохранить' : 'Создать'}
+            </PrimaryButton>
+          </>
+        }
+      >
+        <div className="space-y-4">
+          <div>
+            <Label>Название воронки *</Label>
+            <input
+              className={inputCls}
               value={funnelName}
               onChange={(e) => setFunnelName(e.target.value)}
-              required
             />
-            <TextField
-              label="Описание"
-              fullWidth
-              multiline
+          </div>
+          <div>
+            <Label>Описание</Label>
+            <textarea
+              className={inputCls}
               rows={2}
               value={funnelDescription}
               onChange={(e) => setFunnelDescription(e.target.value)}
             />
+          </div>
 
-            <div className="border-t border-gray-200 pt-4">
-              <div className="flex items-center justify-between mb-4">
-                <h4 className="font-medium text-gray-900">Этапы воронки</h4>
-                <Button
-                  startIcon={<Plus className="w-4 h-4" />}
-                  onClick={handleAddStage}
-                  size="small"
+          <div className="border-t border-gray-200 pt-4">
+            <div className="flex items-center justify-between mb-3">
+              <h4 className="font-medium text-gray-900">Этапы воронки</h4>
+              <button
+                onClick={handleAddStage}
+                className="flex items-center gap-1 text-sm text-blue-600 hover:text-blue-700 font-medium"
+              >
+                <Plus className="w-4 h-4" />
+                Добавить этап
+              </button>
+            </div>
+
+            <div className="space-y-3">
+              {stages.map((stage, index) => (
+                <div
+                  key={stage.id}
+                  className="p-4 border border-gray-200 rounded-lg space-y-3 bg-gray-50"
                 >
-                  Добавить этап
-                </Button>
-              </div>
-
-              <div className="space-y-4">
-                {stages.map((stage, index) => (
-                  <div
-                    key={stage.id}
-                    className="p-4 border border-gray-200 rounded-lg space-y-3"
-                  >
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm font-medium text-gray-700">
-                        Этап {index + 1}
-                      </span>
-                      {stages.length > 1 && (
-                        <IconButton
-                          size="small"
-                          onClick={() => handleRemoveStage(stage.id)}
-                        >
-                          <Trash2 className="w-4 h-4 text-red-600" />
-                        </IconButton>
-                      )}
-                    </div>
-                    <TextField
-                      label="Название этапа"
-                      fullWidth
-                      size="small"
-                      value={stage.name}
-                      onChange={(e) =>
-                        handleStageChange(stage.id, 'name', e.target.value)
-                      }
-                      required
-                    />
-                    <TextField
-                      label="Триггер (критерий перехода)"
-                      fullWidth
-                      size="small"
-                      value={stage.trigger}
-                      onChange={(e) =>
-                        handleStageChange(stage.id, 'trigger', e.target.value)
-                      }
-                      placeholder="Например: Клиент заинтересован"
-                    />
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm font-medium text-gray-700">
+                      Этап {index + 1}
+                    </span>
+                    {stages.length > 1 && (
+                      <button
+                        onClick={() => handleRemoveStage(stage.id)}
+                        className="p-1 rounded-lg text-red-600 hover:bg-red-50 transition-colors"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    )}
                   </div>
-                ))}
-              </div>
+                  <input
+                    className={inputCls}
+                    placeholder="Название этапа"
+                    value={stage.name}
+                    onChange={(e) =>
+                      handleStageChange(stage.id, 'name', e.target.value)
+                    }
+                  />
+                  <input
+                    className={inputCls}
+                    placeholder="Триггер (например: Клиент заинтересован)"
+                    value={stage.trigger}
+                    onChange={(e) =>
+                      handleStageChange(stage.id, 'trigger', e.target.value)
+                    }
+                  />
+                </div>
+              ))}
             </div>
           </div>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleCloseDialog}>Отмена</Button>
-          <Button onClick={handleSave} variant="contained">
-            {editingFunnel ? 'Сохранить' : 'Создать'}
-          </Button>
-        </DialogActions>
-      </Dialog>
+        </div>
+      </Modal>
     </div>
   );
 }

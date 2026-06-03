@@ -81,6 +81,7 @@ export function Login() {
         <div className="mt-6 p-4 bg-gray-50 rounded-lg text-sm text-gray-600">
           <p className="font-medium mb-2">Тестовые аккаунты:</p>
           <p>Админ: admin@crm.com</p>
+          <p>Руководитель: supervisor@crm.com</p>
           <p>Менеджер: manager@crm.com</p>
           <p className="mt-2 text-xs text-gray-500">Пароль: любой</p>
         </div>

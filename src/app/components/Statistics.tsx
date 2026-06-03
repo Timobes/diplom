@@ -26,11 +26,13 @@ export function Statistics() {
 
   const [period, setPeriod] = useState<'week' | 'month' | 'quarter'>('month');
 
+  const FUNNEL_COLORS = ['#3b82f6', '#8b5cf6', '#ec4899', '#10b981', '#f59e0b', '#06b6d4'];
+
   const getContactsByFunnel = () => {
-    return funnels.map((funnel) => ({
+    return funnels.map((funnel, index) => ({
       name: funnel.name,
       value: contacts.filter((c) => c.funnelId === funnel.id).length,
-      color: `#${Math.floor(Math.random() * 16777215).toString(16)}`,
+      color: FUNNEL_COLORS[index % FUNNEL_COLORS.length],
     }));
   };
 

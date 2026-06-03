@@ -3,6 +3,7 @@ import {
   LayoutDashboard,
   Users,
   TrendingUp,
+  KanbanSquare,
   MessageSquare,
   CalendarDays,
   BarChart3,
@@ -17,6 +18,7 @@ import { Header } from './components/Header';
 import { Dashboard } from './components/Dashboard';
 import { ContactsNew } from './components/ContactsNew';
 import { Funnels } from './components/Funnels';
+import { Kanban } from './components/Kanban';
 import { Calendar } from './components/Calendar';
 import { Chat } from './components/Chat';
 import { Statistics } from './components/Statistics';
@@ -26,6 +28,7 @@ type ViewType =
   | 'dashboard'
   | 'contacts'
   | 'funnels'
+  | 'kanban'
   | 'calendar'
   | 'chat'
   | 'statistics'
@@ -44,6 +47,7 @@ export default function App() {
     { name: 'Дашборд', icon: LayoutDashboard, view: 'dashboard' as ViewType, roles: ['admin', 'manager', 'supervisor'] },
     { name: 'Клиенты', icon: Users, view: 'contacts' as ViewType, roles: ['admin', 'manager', 'supervisor'] },
     { name: 'Воронки', icon: TrendingUp, view: 'funnels' as ViewType, roles: ['admin', 'manager', 'supervisor'] },
+    { name: 'Канбан', icon: KanbanSquare, view: 'kanban' as ViewType, roles: ['admin', 'manager', 'supervisor'] },
     { name: 'Календарь', icon: CalendarDays, view: 'calendar' as ViewType, roles: ['admin', 'manager', 'supervisor'] },
     { name: 'Чат', icon: MessageSquare, view: 'chat' as ViewType, roles: ['manager', 'supervisor'] },
     { name: 'Статистика', icon: BarChart3, view: 'statistics' as ViewType, roles: ['admin', 'manager', 'supervisor'] },
@@ -62,6 +66,8 @@ export default function App() {
         return <ContactsNew />;
       case 'funnels':
         return <Funnels />;
+      case 'kanban':
+        return <Kanban />;
       case 'calendar':
         return <Calendar />;
       case 'chat':

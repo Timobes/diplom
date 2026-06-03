@@ -1,13 +1,7 @@
 import { useState } from 'react';
 import { useStore } from '../store/useStore';
 import { Send, MessageSquare, FileText } from 'lucide-react';
-import TextField from '@mui/material/TextField';
-import MenuItem from '@mui/material/MenuItem';
-import Dialog from '@mui/material/Dialog';
-import DialogTitle from '@mui/material/DialogTitle';
-import DialogContent from '@mui/material/DialogContent';
-import DialogActions from '@mui/material/DialogActions';
-import Button from '@mui/material/Button';
+import { Modal, PrimaryButton, SecondaryButton, Label, inputCls } from './ui-kit';
 
 export function Chat() {
   const contacts = useStore((state) => state.contacts);
@@ -272,38 +266,39 @@ export function Chat() {
         </div>
       </div>
 
-      <Dialog
+      <Modal
         open={templateDialogOpen}
         onClose={() => setTemplateDialogOpen(false)}
-        maxWidth="sm"
-        fullWidth
+        title="Создать шаблон"
+        footer={
+          <>
+            <SecondaryButton onClick={() => setTemplateDialogOpen(false)}>
+              Отмена
+            </SecondaryButton>
+            <PrimaryButton onClick={handleSaveTemplate}>Сохранить</PrimaryButton>
+          </>
+        }
       >
-        <DialogTitle>Создать шаблон</DialogTitle>
-        <DialogContent>
-          <div className="space-y-4 pt-2">
-            <TextField
-              label="Название шаблона"
-              fullWidth
+        <div className="space-y-4">
+          <div>
+            <Label>Название шаблона</Label>
+            <input
+              className={inputCls}
               value={newTemplateName}
               onChange={(e) => setNewTemplateName(e.target.value)}
             />
-            <TextField
-              label="Текст шаблона"
-              fullWidth
-              multiline
+          </div>
+          <div>
+            <Label>Текст шаблона</Label>
+            <textarea
+              className={inputCls}
               rows={4}
               value={newTemplateContent}
               onChange={(e) => setNewTemplateContent(e.target.value)}
             />
           </div>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setTemplateDialogOpen(false)}>Отмена</Button>
-          <Button onClick={handleSaveTemplate} variant="contained">
-            Сохранить
-          </Button>
-        </DialogActions>
-      </Dialog>
+        </div>
+      </Modal>
     </div>
   );
 }

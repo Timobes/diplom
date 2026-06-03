@@ -11,14 +11,7 @@ import {
   MessageSquare,
   User,
 } from 'lucide-react';
-import Dialog from '@mui/material/Dialog';
-import DialogTitle from '@mui/material/DialogTitle';
-import DialogContent from '@mui/material/DialogContent';
-import DialogActions from '@mui/material/DialogActions';
-import Button from '@mui/material/Button';
-import TextField from '@mui/material/TextField';
-import MenuItem from '@mui/material/MenuItem';
-import IconButton from '@mui/material/IconButton';
+import { Modal, PrimaryButton, SecondaryButton, Label, inputCls } from './ui-kit';
 
 export function ContactsNew() {
   const contacts = useStore((state) => state.contacts);
@@ -193,12 +186,18 @@ export function ContactsNew() {
                 </div>
               </div>
               <div className="flex gap-1">
-                <IconButton size="small" onClick={() => handleOpenDialog(contact)}>
+                <button
+                  onClick={() => handleOpenDialog(contact)}
+                  className="p-1.5 rounded-lg text-gray-500 hover:bg-gray-100 transition-colors"
+                >
                   <Edit className="w-4 h-4" />
-                </IconButton>
-                <IconButton size="small" onClick={() => handleDelete(contact.id)}>
-                  <Trash2 className="w-4 h-4 text-red-600" />
-                </IconButton>
+                </button>
+                <button
+                  onClick={() => handleDelete(contact.id)}
+                  className="p-1.5 rounded-lg text-red-600 hover:bg-red-50 transition-colors"
+                >
+                  <Trash2 className="w-4 h-4" />
+                </button>
               </div>
             </div>
 
@@ -254,195 +253,151 @@ export function ContactsNew() {
         </div>
       )}
 
-      <Dialog open={dialogOpen} onClose={handleCloseDialog} maxWidth="md" fullWidth>
-        <DialogTitle>
-          {selectedContact ? 'Редактировать клиента' : 'Добавить клиента'}
-        </DialogTitle>
-        <DialogContent>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
-            <TextField
-              label="Имя *"
-              fullWidth
-              value={formData.firstName}
-              onChange={(e) =>
-                setFormData({ ...formData, firstName: e.target.value })
-              }
-            />
-            <TextField
-              label="Фамилия *"
-              fullWidth
-              value={formData.lastName}
-              onChange={(e) =>
-                setFormData({ ...formData, lastName: e.target.value })
-              }
-            />
-            <TextField
-              label="Отчество"
-              fullWidth
-              value={formData.middleName}
-              onChange={(e) =>
-                setFormData({ ...formData, middleName: e.target.value })
-              }
-            />
-            <TextField
-              label="Возраст"
-              fullWidth
-              type="number"
-              value={formData.age}
-              onChange={(e) => setFormData({ ...formData, age: e.target.value })}
-            />
-            <TextField
-              label="Телефон *"
-              fullWidth
-              value={formData.phone}
-              onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-            />
-            <TextField
-              label="Email *"
-              fullWidth
-              type="email"
-              value={formData.email}
-              onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-            />
-            <TextField
-              label="Страна"
-              fullWidth
-              value={formData.country}
-              onChange={(e) =>
-                setFormData({ ...formData, country: e.target.value })
-              }
-            />
-            <TextField
-              label="Город"
-              fullWidth
-              value={formData.city}
-              onChange={(e) => setFormData({ ...formData, city: e.target.value })}
-            />
-            <TextField
-              label="Компания"
-              fullWidth
-              value={formData.company}
-              onChange={(e) =>
-                setFormData({ ...formData, company: e.target.value })
-              }
-            />
-            <TextField
-              label="Должность"
-              fullWidth
-              value={formData.position}
-              onChange={(e) =>
-                setFormData({ ...formData, position: e.target.value })
-              }
-            />
-            <TextField
-              label="Воронка"
-              fullWidth
-              select
-              value={formData.funnelId}
-              onChange={(e) =>
-                setFormData({ ...formData, funnelId: e.target.value, funnelStage: '' })
-              }
-            >
-              <MenuItem value="">Не выбрана</MenuItem>
-              {funnels.map((funnel) => (
-                <MenuItem key={funnel.id} value={funnel.id}>
-                  {funnel.name}
-                </MenuItem>
-              ))}
-            </TextField>
-            {selectedFunnel && (
-              <TextField
-                label="Этап воронки"
-                fullWidth
-                select
-                value={formData.funnelStage}
-                onChange={(e) =>
-                  setFormData({ ...formData, funnelStage: e.target.value })
-                }
-              >
-                {selectedFunnel.stages.map((stage) => (
-                  <MenuItem key={stage.id} value={stage.id}>
-                    {stage.name}
-                  </MenuItem>
-                ))}
-              </TextField>
-            )}
-            <TextField
-              label="Комментарий"
-              fullWidth
-              multiline
-              rows={3}
-              className="md:col-span-2"
-              value={formData.comment}
-              onChange={(e) =>
-                setFormData({ ...formData, comment: e.target.value })
-              }
-            />
+      <Modal
+        open={dialogOpen}
+        onClose={handleCloseDialog}
+        maxWidth="max-w-2xl"
+        title={selectedContact ? 'Редактировать клиента' : 'Добавить клиента'}
+        footer={
+          <>
+            <SecondaryButton onClick={handleCloseDialog}>Отмена</SecondaryButton>
+            <PrimaryButton onClick={handleSave}>
+              {selectedContact ? 'Сохранить' : 'Создать'}
+            </PrimaryButton>
+          </>
+        }
+      >
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <Label>Имя *</Label>
+            <input className={inputCls} value={formData.firstName}
+              onChange={(e) => setFormData({ ...formData, firstName: e.target.value })} />
           </div>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleCloseDialog}>Отмена</Button>
-          <Button onClick={handleSave} variant="contained">
-            {selectedContact ? 'Сохранить' : 'Создать'}
-          </Button>
-        </DialogActions>
-      </Dialog>
+          <div>
+            <Label>Фамилия *</Label>
+            <input className={inputCls} value={formData.lastName}
+              onChange={(e) => setFormData({ ...formData, lastName: e.target.value })} />
+          </div>
+          <div>
+            <Label>Отчество</Label>
+            <input className={inputCls} value={formData.middleName}
+              onChange={(e) => setFormData({ ...formData, middleName: e.target.value })} />
+          </div>
+          <div>
+            <Label>Возраст</Label>
+            <input className={inputCls} type="number" value={formData.age}
+              onChange={(e) => setFormData({ ...formData, age: e.target.value })} />
+          </div>
+          <div>
+            <Label>Телефон *</Label>
+            <input className={inputCls} value={formData.phone}
+              onChange={(e) => setFormData({ ...formData, phone: e.target.value })} />
+          </div>
+          <div>
+            <Label>Email *</Label>
+            <input className={inputCls} type="email" value={formData.email}
+              onChange={(e) => setFormData({ ...formData, email: e.target.value })} />
+          </div>
+          <div>
+            <Label>Страна</Label>
+            <input className={inputCls} value={formData.country}
+              onChange={(e) => setFormData({ ...formData, country: e.target.value })} />
+          </div>
+          <div>
+            <Label>Город</Label>
+            <input className={inputCls} value={formData.city}
+              onChange={(e) => setFormData({ ...formData, city: e.target.value })} />
+          </div>
+          <div>
+            <Label>Компания</Label>
+            <input className={inputCls} value={formData.company}
+              onChange={(e) => setFormData({ ...formData, company: e.target.value })} />
+          </div>
+          <div>
+            <Label>Должность</Label>
+            <input className={inputCls} value={formData.position}
+              onChange={(e) => setFormData({ ...formData, position: e.target.value })} />
+          </div>
+          <div>
+            <Label>Воронка</Label>
+            <select className={inputCls} value={formData.funnelId}
+              onChange={(e) => setFormData({ ...formData, funnelId: e.target.value, funnelStage: '' })}>
+              <option value="">Не выбрана</option>
+              {funnels.map((funnel) => (
+                <option key={funnel.id} value={funnel.id}>{funnel.name}</option>
+              ))}
+            </select>
+          </div>
+          {selectedFunnel && (
+            <div>
+              <Label>Этап воронки</Label>
+              <select className={inputCls} value={formData.funnelStage}
+                onChange={(e) => setFormData({ ...formData, funnelStage: e.target.value })}>
+                <option value="">Не выбран</option>
+                {selectedFunnel.stages.map((stage) => (
+                  <option key={stage.id} value={stage.id}>{stage.name}</option>
+                ))}
+              </select>
+            </div>
+          )}
+          <div className="md:col-span-2">
+            <Label>Комментарий</Label>
+            <textarea className={inputCls} rows={3} value={formData.comment}
+              onChange={(e) => setFormData({ ...formData, comment: e.target.value })} />
+          </div>
+        </div>
+      </Modal>
 
-      <Dialog
+      <Modal
         open={commentsDialogOpen}
         onClose={() => setCommentsDialogOpen(false)}
-        maxWidth="sm"
-        fullWidth
+        title={
+          selectedContact
+            ? `Комментарии — ${selectedContact.firstName} ${selectedContact.lastName}`
+            : 'Комментарии'
+        }
+        footer={
+          <SecondaryButton onClick={() => setCommentsDialogOpen(false)}>
+            Закрыть
+          </SecondaryButton>
+        }
       >
-        <DialogTitle>
-          Комментарии -{' '}
-          {selectedContact &&
-            `${selectedContact.firstName} ${selectedContact.lastName}`}
-        </DialogTitle>
-        <DialogContent>
-          <div className="space-y-4">
-            {selectedContact?.comments.map((comment) => (
-              <div key={comment.id} className="p-3 bg-gray-50 rounded-lg">
-                <div className="flex items-center justify-between mb-1">
-                  <span className="text-sm font-medium text-gray-900">
-                    {comment.author}
-                  </span>
-                  <span className="text-xs text-gray-500">
-                    {new Date(comment.createdAt).toLocaleString('ru-RU')}
-                  </span>
-                </div>
-                <p className="text-sm text-gray-700">{comment.text}</p>
+        <div className="space-y-4">
+          {selectedContact?.comments.map((comment) => (
+            <div key={comment.id} className="p-3 bg-gray-50 rounded-lg">
+              <div className="flex items-center justify-between mb-1">
+                <span className="text-sm font-medium text-gray-900">
+                  {comment.author}
+                </span>
+                <span className="text-xs text-gray-500">
+                  {new Date(comment.createdAt).toLocaleString('ru-RU')}
+                </span>
               </div>
-            ))}
-            {selectedContact?.comments.length === 0 && (
-              <p className="text-center text-gray-500 py-4">Нет комментариев</p>
-            )}
-
-            <div className="pt-4 border-t border-gray-200">
-              <TextField
-                label="Новый комментарий"
-                fullWidth
-                multiline
-                rows={3}
-                value={newComment}
-                onChange={(e) => setNewComment(e.target.value)}
-              />
-              <Button
-                variant="contained"
-                fullWidth
-                className="mt-2"
-                onClick={handleAddComment}
-                disabled={!newComment.trim()}
-              >
-                Добавить комментарий
-              </Button>
+              <p className="text-sm text-gray-700">{comment.text}</p>
             </div>
+          ))}
+          {selectedContact?.comments.length === 0 && (
+            <p className="text-center text-gray-500 py-4">Нет комментариев</p>
+          )}
+
+          <div className="pt-4 border-t border-gray-200">
+            <Label>Новый комментарий</Label>
+            <textarea
+              className={inputCls}
+              rows={3}
+              value={newComment}
+              onChange={(e) => setNewComment(e.target.value)}
+            />
+            <PrimaryButton
+              className="w-full mt-2"
+              onClick={handleAddComment}
+              disabled={!newComment.trim()}
+            >
+              Добавить комментарий
+            </PrimaryButton>
           </div>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setCommentsDialogOpen(false)}>Закрыть</Button>
-        </DialogActions>
-      </Dialog>
+        </div>
+      </Modal>
     </div>
   );
 }
