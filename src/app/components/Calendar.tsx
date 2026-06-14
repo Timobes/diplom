@@ -200,7 +200,7 @@ export function Calendar() {
           {selectedEvent ? 'Редактировать событие' : 'Создать событие'}
         </DialogTitle>
         <DialogContent>
-          <div className="space-y-4 pt-2">
+          <div className="space-y-4 pt-2 flex flex-col gap-y-[20px]">
             <TextField
               label="Название события *"
               fullWidth
